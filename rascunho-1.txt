@@ -1,0 +1,53 @@
+#### baixar a tree do Slackware64-current e criar pacote do openzfs ####
+
+
+$ mkdir /tmp/teste
+$ cd /tmp/teste
+
+$ mkdir iso
+$ rsync -av --delete -rlptD --delete-excluded --progress --exclude pasture --exclude testing --exclude source --exclude kde --exclude extra/source rsync://linorg.usp.br/slackware/slackware64-current/ ./iso/
+
+$ mkdir base-build
+
+#### Prepara a base para compilar/cria o pacote ####
+
+# installpkg --root /tmp/teste/base-build /tmp/teste/iso/slackware64/a/kernel-modules-6.1.64-x86_64-1.txz
+# installpkg --root /tmp/teste/base-build /tmp/teste/iso/slackware64/k/kernel-source-6.1.64-noarch-1.txz
+
+$ cd /tmp/teste/base-build/lib/modules/6.1.64
+
+# ln -sf /tmp/teste/base-build/usr/src/linux-6.1.64 source
+# ln -sf /tmp/teste/base-build/usr/src/linux-6.1.64 build
+# cd -
+
+#### baixar o source e criar o pacote ####
+
+$ lftp -c "open https://slackbuilds.org/slackbuilds/15.0/system/ ; mirror openzfs"
+$ cd openzfs
+$ source openzfs.info
+$ wget -c $DOWNLOAD_x86_64
+$ chmod +x openzfs.SlackBuild
+
+$ vim openzfs.SlackBuild
+
+-----
+/tmp/teste/base-build/lib/modules/6.1.64/source
+make -j$(nproc)
+----
+
+# export KERNEL=6.1.64
+# sh openzfs.SlackBuild
+
+#### colocar o pacote na tree da iso ####
+
+# cd /tmp/teste/iso
+# mkdir openzfs
+# cp /tmp/openzfs-2.2.1_6.1.64-x86_64-1_SBo.tgz ./openzfs
+# cp /tmp/teste/zfs-config-slackware64 ./
+
+
+#### criar a iso ###
+
+# xorriso -as mkisofs -iso-level 3 -full-iso9660-filenames -R -J -A "Slackware Install" -hide-rr-moved -v -d -N -eltorito-boot isolinux/isolinux.bin -eltorito-catalog isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin -eltorito-alt-boot -e isolinux/efiboot.img -no-emul-boot -isohybrid-gpt-basdat -m 'source/' -volid "SlackDVD" -output /tmp/slackware-dvd-$(date +"%Y%m%d").iso .
+
+
