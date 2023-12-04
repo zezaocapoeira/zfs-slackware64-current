@@ -3,6 +3,7 @@
 Salve galera.
 
 Isso não é um guia é apenas um roteiro/rascunho complemento do vídeo.
+
 É necessário uma instalação do Slackware64-current atualizado para modificar/criar a iso.
 
 - https://youtu.be/3kFWXWQz8Ys
