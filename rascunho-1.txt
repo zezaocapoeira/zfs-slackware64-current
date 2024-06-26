@@ -30,6 +30,21 @@ $ chmod +x openzfs.SlackBuild
 
 $ vim openzfs.SlackBuild
 
+
+###
+OBS:
+Essa parte do openzfs.SlackBuild , foi modificada pelo mantenedor.
+
+https://git.slackbuilds.org/slackbuilds/commit/?id=e30e60c8d9f08fd3a6f7aedfd5a0e20f0e576cdb
+
+  --with-linux="/lib/modules/${KERNEL}/source" \
+  --with-linux-obj="/lib/modules/${KERNEL}/source" \
+
+Para criar o pacote para a iso tem que verificar o link acima, e adicionar
+essas duas linhas nos lugares correspondentes e configurar.
+
+###
+
 -----
 /tmp/teste/base-build/lib/modules/6.1.64/source
 make -j$(nproc)
