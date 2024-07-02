@@ -11,13 +11,13 @@ $ mkdir base-build
 
 #### Prepara a base para compilar/cria o pacote ####
 
-# installpkg --root /tmp/teste/base-build /tmp/teste/iso/slackware64/a/kernel-modules-6.1.64-x86_64-1.txz
-# installpkg --root /tmp/teste/base-build /tmp/teste/iso/slackware64/k/kernel-source-6.1.64-noarch-1.txz
+# installpkg --root /tmp/teste/base-build /tmp/teste/iso/slackware64/a/kernel-modules-6.9.7-x86_64-1.txz
+# installpkg --root /tmp/teste/base-build /tmp/teste/iso/slackware64/k/kernel-source-6.9.7-noarch-1.txz
 
-$ cd /tmp/teste/base-build/lib/modules/6.1.64
+$ cd /tmp/teste/base-build/lib/modules/6.9.7
 
-# ln -sf /tmp/teste/base-build/usr/src/linux-6.1.64 source
-# ln -sf /tmp/teste/base-build/usr/src/linux-6.1.64 build
+# ln -sf /tmp/teste/base-build/usr/src/linux-6.9.7 source
+# ln -sf /tmp/teste/base-build/usr/src/linux-6.9.7 build
 # cd -
 
 #### baixar o source e criar o pacote ####
@@ -25,7 +25,7 @@ $ cd /tmp/teste/base-build/lib/modules/6.1.64
 $ lftp -c "open https://slackbuilds.org/slackbuilds/15.0/system/ ; mirror openzfs"
 $ cd openzfs
 $ source openzfs.info
-$ wget -c $DOWNLOAD_x86_64
+$ wget -c $DOWNLOAD
 $ chmod +x openzfs.SlackBuild
 
 $ vim openzfs.SlackBuild
@@ -43,21 +43,19 @@ https://git.slackbuilds.org/slackbuilds/commit/?id=e30e60c8d9f08fd3a6f7aedfd5a0e
 Para criar o pacote para a iso tem que verificar o link acima, e adicionar
 essas duas linhas nos lugares correspondentes e configurar.
 
-###
-
------
-/tmp/teste/base-build/lib/modules/6.1.64/source
+/tmp/teste/base-build/lib/modules/6.9.7/source
 make -j$(nproc)
-----
 
-# export KERNEL=6.1.64
+###########
+
+# export KERNEL=6.9.7
 # sh openzfs.SlackBuild
 
 #### colocar o pacote na tree da iso ####
 
 # cd /tmp/teste/iso
 # mkdir openzfs
-# cp /tmp/openzfs-2.2.1_6.1.64-x86_64-1_SBo.tgz ./openzfs
+# cp /tmp/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz ./openzfs
 # cp /tmp/teste/zfs-config-slackware64 ./
 
 

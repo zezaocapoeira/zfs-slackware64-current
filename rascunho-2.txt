@@ -10,7 +10,7 @@
 ## carregar o módulo do zfs
 # rm /mnt/README
 # mount /dev/sr0 /mnt
-# installpkg /mnt/openzfs/openzfs-2.2.1_6.1.64-x86_64-1_SBo.tgz
+# installpkg /mnt/openzfs/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz
 # umount /dev/sr0
 
 # modprobe zfs
@@ -110,15 +110,16 @@ cp /etc/zfs/zpool.cache /mnt/etc/zfs/zpool.cache
 # wget $DOWNLOAD
 # chmod +x openzfs.SlackBuild
 # sh openzfs.SlackBuild
-# installpkg /tmp/openzfs-2.2.1_6.1.64-x86_64-1_SBo.tgz
+# installpkg /tmp/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz
 
-#----------------------------
-# mount /dev/sr0 /mnt/iso
-# cp /mnt/hd/zfs-config/rc.6-modificado /etc/rc.d/rc.6
-# cp /mnt/hd/zfs-config/rc.S-modificadovim /etc/rc.d/rc.S
-# cp /mnt/hd/zfs-config/rc.zfs-modificadoim /etc/rc.d/rc.zfs
-# cp /mnt/hd/zfs-config/init-modificado /boot/initrd-tree/init
-------------------------------
+##----------------------------
+
+# cp /zfs-config/rc.6-modificado-zfs /etc/rc.d/rc.6
+# cp /zfs-config/rc.S-modificado-zfs /etc/rc.d/rc.S
+# cp /zfs-config/init-modificado-zfs /boot/initrd-tree/init
+# cp /zfs-config/rc.zfs-modificado /etc/rc.d/rc.zfs
+
+##------------------------------
 
 
 -----------------------------
@@ -129,44 +130,50 @@ cp /etc/zfs/zpool.cache /mnt/etc/zfs/zpool.cache
 ------------------------------
 
 # cd /boot/initrd-tree
-# installpkg --root /boot/initrd-tree/ /tmp/openzfs-2.2.1_6.1.64-x86_64-1_SBo.tgz
+# installpkg --root /boot/initrd-tree/ /tmp/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz
+
+
 # vim /etc/mkinitrd.conf
 
------------------
+##-----------------
+
 SOURCE_TREE="/boot/initrd-tree"
 CLEAR_TREE="0"
 OUTPUT_IMAGE="/boot/initrd.gz"
 MODULE_LIST="zfs"
 ROOTDEV="zroot/ROOT/slackzfs"
 ROOTFS="zfs"
-----------------
+
+##----------------
 
 # vim /etc/default/grub
 GRUB_CMDLINE_LINUX="root=ZFS=zroot/ROOT/slackzfs"
 
 
-# depmod -a 6.1.64
-# mkinitrd -k 6.1.64 -F /etc/mkinitrd.conf
+# depmod -a 6.9.7
+# mkinitrd -k 6.9.7 -F /etc/mkinitrd.conf
 
 # export ZPOOL_VDEV_NAME_PATH=YES
 # mount -t efivarfs none /sys/firmware/efi/efivars
 # grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=ZFS
 # grub-mkconfig -o /boot/grub/grub.cfg
 
+# umount -lR /mnt
+# zfs umount -a
+# zpool export -a
 
+
+-----------
 # zfs create -V 4G -b $(getconf PAGESIZE) -o compression=lz4 -o logbias=throughput -o sync=always -o primarycache=metadata -o secondarycache=none -o com.sun:auto-snapshot=false zroot/swap
 
 # mkswap -f /dev/zvol/zroot/swap
 # swapon /dev/zvol/zroot/swap
 
------------
+###-------------
+
 /dev/zvol/zroot/swap none swap discard 0 0
 
------------
-
-# umount -lR /mnt
-# zfs umount -a
-# zpool export -a
+###-----------
 
 
 # zfs create zroot/home/zezao
