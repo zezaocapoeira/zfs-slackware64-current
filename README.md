@@ -1,5 +1,9 @@
 # Slackware64-current ( boot on zfs / root on zfs )
 
+# Screenshot
+![screen slackZFS](https://raw.githubusercontent.com/zezaocapoeira/zfs-slackware64-current/main/slack-zfs.png)
+
+
 Salve galera.
 
 Isso não é um guia é apenas um roteiro/rascunho complemento do vídeo.
