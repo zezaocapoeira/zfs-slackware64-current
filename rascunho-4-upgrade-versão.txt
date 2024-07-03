@@ -1,0 +1,21 @@
+## Para upgrade de kernel ou versão do openzfs.
+#
+
+
+# lftp -c "open https://slackbuilds.org/slackbuilds/15.0/system/ ; mirror openzfs"
+# cd openzfs/
+# source openzfs.info
+# wget $DOWNLOAD
+# chmod +x openzfs.SlackBuild
+# export KERNEL=6.9.7
+# sh openzfs.SlackBuild
+# upgradepkg /tmp/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz
+
+
+Para o /boot/initrd-tree:
+
+# ROOT=/boot/initrd-tree/ upgradepkg /tmp/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz
+# depmod -a 6.9.7
+# mkinitrd -k 6.9.7 -F /etc/mkinitrd.conf
+# export ZPOOL_VDEV_NAME_PATH=YES
+# grub-mkconfig -o /boot/grub/grub.cfg

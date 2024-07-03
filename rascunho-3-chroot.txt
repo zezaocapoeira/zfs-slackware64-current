@@ -1,0 +1,42 @@
+## Para manutenção
+#
+
+acessar usando chroot no slackware zfs.
+
+### após o boot da iso
+
+### habilitar o acesso via ssh
+
+# passwd
+# dhcpcd
+# /etc/rc.d/rc.dropbear start
+
+
+## carregar o módulo do zfs
+# rm /mnt/README
+# mount /dev/sr0 /mnt
+# installpkg /mnt/openzfs/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz
+# umount /dev/sr0
+
+# modprobe zfs
+
+
+# zpool export -a
+# zpool import -N -R /mnt zroot
+# zpool import -N -R /mnt bpool
+# zfs load-key -a
+# zfs mount zroot/ROOT/slackzfs
+# zfs mount -a
+# mount /dev/sda1 /mnt/boot/efi
+
+
+# mount -t proc /proc /mnt/proc
+# mount -o bind /dev /mnt/dev
+# mount -o bind /sys /mnt/sys
+# chroot /mnt /bin/bash
+# source /etc/profile
+
+
+# umount -lR /mnt
+# zfs umount -a
+# zpool export -a
