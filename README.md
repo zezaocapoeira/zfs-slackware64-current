@@ -19,7 +19,7 @@ Referência:
 - https://github.com/tterpelle/docker-slack64-current-zfs
 - https://wiki.archlinux.org/title/Install_Arch_Linux_on_ZFS
 - https://wiki.gentoo.org/wiki/ZFS
-- https://www.funtoo.org/ZFS/en
+- https://www.funtoo.org/ZFS_as_Root_Filesystem
 - https://github.com/patrickernandes/slackware-btrfs-instalacao
 - https://wordpress.apollostreet.net
 
