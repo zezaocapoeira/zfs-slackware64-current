@@ -313,7 +313,7 @@ if [ "$RESCUE" = "" ]; then
     umount -l /mountkey
     rmdir /mountkey 2>/dev/null
   fi
-  
+
   # Resume state from swap
   if [ "$RESUMEDEV" != "" ]; then
     # Find resume device if a label or UUID was given:

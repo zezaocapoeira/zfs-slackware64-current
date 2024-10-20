@@ -108,9 +108,16 @@ cp /etc/zfs/zpool.cache /mnt/etc/zfs/zpool.cache
 # cd openzfs/
 # source openzfs.info
 # wget $DOWNLOAD
+
+adicionar no openzfs.SlackBuild
+
+  --with-linux="/lib/modules/${KERNEL}/build" \
+  --with-linux-obj="/lib/modules/${KERNEL}/build" \
+
 # chmod +x openzfs.SlackBuild
+# export KERNEL=6.11.4
 # sh openzfs.SlackBuild
-# installpkg /tmp/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz
+# installpkg /tmp/openzfs-2.2.6_6.11.4-x86_64-1_SBo.tgz
 
 ##----------------------------
 
@@ -130,7 +137,7 @@ cp /etc/zfs/zpool.cache /mnt/etc/zfs/zpool.cache
 ------------------------------
 
 # cd /boot/initrd-tree
-# installpkg --root /boot/initrd-tree/ /tmp/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz
+# installpkg --root /boot/initrd-tree/ /tmp/openzfs-2.2.6_6.11.4-x86_64-1_SBo.tgz
 
 
 # vim /etc/mkinitrd.conf
@@ -150,8 +157,8 @@ ROOTFS="zfs"
 GRUB_CMDLINE_LINUX="root=ZFS=zroot/ROOT/slackzfs"
 
 
-# depmod -a 6.9.7
-# mkinitrd -k 6.9.7 -F /etc/mkinitrd.conf
+# depmod -a 6.11.4
+# mkinitrd -k 6.11.4 -F /etc/mkinitrd.conf
 
 # export ZPOOL_VDEV_NAME_PATH=YES
 # mount -t efivarfs none /sys/firmware/efi/efivars

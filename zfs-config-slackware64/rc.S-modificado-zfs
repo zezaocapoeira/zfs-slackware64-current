@@ -224,17 +224,15 @@ if [ -z "$container" ]; then
     ZFSROOT=$(/sbin/mount | grep "on / type zfs" | cut -d' ' -f1)
     if [ -z "$ZFSROOT" ]; then
       /sbin/mount -w -v -n -o remount /
-   else
-    echo "----Looks like zfs is mounted on root!----"
-     /sbin/zfs set readonly=off ${ZFSROOT%%/${ZFSROOT##*/}}
-     # the rest of the datasets are mounted below
-   fi
-
- # If we're using bcachefs for the root filesystem(s), remount read-write
+    else
+      echo "----Looks like zfs is mounted on root!----"
+      /sbin/zfs set readonly=off ${ZFSROOT%%/${ZFSROOT##*/}}
+  fi
+  # If we're using bcachefs for the root filesystem(s), remount read-write
   # and let bcachefs do its own fsck:
   elif grep -q ' / bcachefs ' /proc/mounts ; then
     echo "Remounting bcachefs root device(s) with read-write enabled."
-    /sbin/mount -o remount,rw,fsck /
+    /sbin/mount -o remount,rw,fsck,fix_errors / 
   elif [ ! $READWRITE = yes ]; then
     # Check the root filesystem:
     RETVAL=0

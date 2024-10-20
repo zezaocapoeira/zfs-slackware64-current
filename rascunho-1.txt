@@ -10,14 +10,12 @@ $ rsync -av --delete -rlptD --delete-excluded --progress --exclude pasture --exc
 $ mkdir base-build
 
 #### Prepara a base para compilar/cria o pacote ####
+# installpkg --root /tmp/teste/base-build/tmp/teste/iso/slackware64/a/kernel-generic-6.11.4-x86_64-1.txz
+# installpkg --root /tmp/teste/base-build/tmp/teste/iso/slackware64/k/kernel-source-6.11.4-noarch-1.txz
 
-# installpkg --root /tmp/teste/base-build /tmp/teste/iso/slackware64/a/kernel-modules-6.9.7-x86_64-1.txz
-# installpkg --root /tmp/teste/base-build /tmp/teste/iso/slackware64/k/kernel-source-6.9.7-noarch-1.txz
+$ cd /tmp/teste/base-build/lib/modules/6.11.4
 
-$ cd /tmp/teste/base-build/lib/modules/6.9.7
-
-# ln -sf /tmp/teste/base-build/usr/src/linux-6.9.7 source
-# ln -sf /tmp/teste/base-build/usr/src/linux-6.9.7 build
+# ln -sf /tmp/teste/base-build/usr/src/linux-6.11.4 build
 # cd -
 
 #### baixar o source e criar o pacote ####
@@ -40,23 +38,32 @@ https://git.slackbuilds.org/slackbuilds/commit/?id=e30e60c8d9f08fd3a6f7aedfd5a0e
   --with-linux="/lib/modules/${KERNEL}/source" \
   --with-linux-obj="/lib/modules/${KERNEL}/source" \
 
+
 Para criar o pacote para a iso tem que verificar o link acima, e adicionar
 essas duas linhas nos lugares correspondentes e configurar.
 
-/tmp/teste/base-build/lib/modules/6.9.7/source
+adicione da seguinte forma:
+...
+  --with-linux="/tmp/teste/base-build/lib/modules/6.11.4/build" \
+  --with-linux-obj="/tmp/teste/base-build/lib/modules/6.11.4/build" \
+...
+
+
+- local para adicionar ( /tmp/teste/base-build/lib/modules/6.11.4/build )
+
 make -j$(nproc)
 
 ###########
 
-# export KERNEL=6.9.7
+# export KERNEL=6.11.4
 # sh openzfs.SlackBuild
 
 #### colocar o pacote na tree da iso ####
 
 # cd /tmp/teste/iso
 # mkdir openzfs
-# cp /tmp/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz ./openzfs
-# cp /tmp/teste/zfs-config-slackware64 ./
+# cp /tmp/openzfs-2.2.6_6.11.4-x86_64-1_SBo.tgz ./openzfs
+# cp -r /tmp/teste/zfs-config-slackware64 ./
 
 
 #### criar a iso ###
