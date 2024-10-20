@@ -14,6 +14,8 @@
 
 # installpkg /mnt/slackware/l/libunwind-1.8.1-x86_64-1.txz ( fix error loading ...)
 
+https://raw.githubusercontent.com/zezaocapoeira/zfs-slackware64-current/refs/heads/main/lib-error-fix.png
+
 # umount /dev/sr0
 
 # modprobe zfs
