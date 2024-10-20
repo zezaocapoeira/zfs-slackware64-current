@@ -10,7 +10,10 @@
 ## carregar o módulo do zfs
 # rm /mnt/README
 # mount /dev/sr0 /mnt
-# installpkg /mnt/openzfs/openzfs-2.2.4_6.9.7-x86_64-1_SBo.tgz
+# installpkg /mnt/openzfs/openzfs-2.2.6_6.11.4-x86_64-1_SBo.tgz
+
+# installpkg /mnt/slackware/l/libunwind-1.8.1-x86_64-1.txz ( fix error loading ...)
+
 # umount /dev/sr0
 
 # modprobe zfs
