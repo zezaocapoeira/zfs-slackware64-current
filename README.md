@@ -21,6 +21,6 @@ Referência:
 - https://wiki.gentoo.org/wiki/ZFS
 - https://www.funtoo.org/ZFS_as_Root_Filesystem
 - https://github.com/patrickernandes/slackware-btrfs-instalacao
-- https://wordpress.apollostreet.net
+- https://wordpress.apollostreet.net/openzfs
 
 Obrigado pela atenção, salve!!!

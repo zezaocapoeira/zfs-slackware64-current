@@ -10,8 +10,8 @@ $ rsync -av --delete -rlptD --delete-excluded --progress --exclude pasture --exc
 $ mkdir base-build
 
 #### Prepara a base para compilar/cria o pacote ####
-# installpkg --root /tmp/teste/base-build/tmp/teste/iso/slackware64/a/kernel-generic-6.11.4-x86_64-1.txz
-# installpkg --root /tmp/teste/base-build/tmp/teste/iso/slackware64/k/kernel-source-6.11.4-noarch-1.txz
+# installpkg --root /tmp/teste/base-build /tmp/teste/iso/slackware64/a/kernel-generic-6.11.4-x86_64-1.txz
+# installpkg --root /tmp/teste/base-build /tmp/teste/iso/slackware64/k/kernel-source-6.11.4-noarch-1.txz
 
 $ cd /tmp/teste/base-build/lib/modules/6.11.4
 
