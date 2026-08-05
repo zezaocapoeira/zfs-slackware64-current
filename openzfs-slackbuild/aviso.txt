@@ -1,0 +1,6 @@
+arquivo rc.zfs está modificado em relação ao slackbuild.org
+
+uso o arquivo lista.txt para baixar o source do openzfs, basta editar e
+alterar as versões
+
+wget -c $(cat lista.txt)
