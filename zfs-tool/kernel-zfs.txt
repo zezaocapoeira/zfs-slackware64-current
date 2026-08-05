@@ -1,0 +1,65 @@
+tar -xvf linux-7.1.5.tar.xz -C /usr/src
+
+ln -sf linux-7.1.5 linux
+
+arquivo config
+
+https://mirrors.slackware.com/slackware/slackware64-current/testing/source/linux-7.1.x/
+
+copie para /usr/src/linux/.config
+
+make oldconfig
+make  menuconfig
+time make all -j14 -l14 2>&1 | tee /tmp/kernel-build.log
+
+make modules_install INSTALL_MOD_STRIP=1
+
+---
+nessa etapa vamos remover pacote openzfs que corresponde ao kernel antigo
+
+removepkg openzfs-2.4.3_7.1.3-x86_64-1_SBo
+
+ROOT=/boot/initrd-tree removepkg openzfs-2.4.3_7.1.3-x86_64-1_SBo
+
+
+cd /lib/modules/
+rm -rf kernel-mais-antigo
+
+cd /boot/
+
+rm -rf *kernel-mais-antigo*
+
+e também remover as entradas deles no /boot/init-tree/
+
+cd /boot/init-tree/lib
+
+rm -rf kernel-antigo
+
+---
+
+Agora compilar o openzfs para o kernel recem compilado
+
+cd openzfs
+
+export KERNEL=7.1.5
+
+sh -x openzfs.SlackBuild
+
+installpkg /tmp/openzfs-2.4.3_7.1.5-x86_64-1_SBo.tgz
+installpkg --root /boot/initrd-tree /tmp/openzfs-2.4.3_7.1.5-x86_64-1_SBo.tgz
+
+- depois disso vamos continuar a configuração do kernel e gerar um novo initr.img
+
+aqui uso o script "config-kernel-update"
+
+export KERNEL=7.1.5
+
+config-kernel-update.sh
+
+- copia o vmlinuz System.map config para o /boot
+
+- linka os arquivos correspondentes
+
+- gera o initrd.img
+
+- atualiza o grub

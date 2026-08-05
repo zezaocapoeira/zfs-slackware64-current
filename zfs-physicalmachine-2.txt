@@ -1,0 +1,196 @@
+# chroot etapas
+
+-no caso esteja usando a iso do slackware
+no fim do setup de instalção escolha a 
+opção "shell" na janela do dialog e use:
+
+chroot /mnt
+
+- no caso do live-cd na parte da instalação
+
+mount -t proc /proc /mnt/proc
+mount -o bind /dev /mnt/dev
+mount -o bind /sys /mnt/sys
+chroot /mnt /bin/bash
+source /etc/profile
+
+- timezone
+
+ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
+
+- o /etc/fstab nessa instalação é somente para
+/boot/efi
+swap em zfs
+devpts
+proc
+tmpfs
+
+
+-ajuste o uuid da partição EFI para sua realidade
+
+--------------------------------------------------------------------------------
+
+UUID=D4DA-CF9A      /boot/efi        vfat        defaults,noauto         1   0
+
+/dev/zvol/zroot/swap none swap discard 0 0
+
+
+devpts           /dev/pts         devpts      gid=5,mode=620   0   0
+
+proc             /proc            proc        defaults         0   0
+
+tmpfs            /dev/shm         tmpfs       defaults         0   0
+
+--------------------------------------------------------------------------------
+
+vim /etc/slackpkg/mirrors
+
+slackpkg update
+
+slackpkg update gpg
+
+- ajuste para false algumas coisas para não apagar /boot/init-tree
+
+vim /etc/default/geninitrd 
+
+GENINITRD_INITRD_GZ_SYMLINK=false
+AUTO_REMOVE_ORPHANED_INITRDS=false
+AUTO_REMOVE_INITRD_TREE=false
+
+
+vim /var/lib/pkgtools/setup/setup.01.mkinitrd 
+
+-------------------------------------------------------------------------------
+if [ -z "$INSIDE_INSTALLER" ]; then
+  # Don't set $KERNEL... if we have no KERNEL or $1, use the mewest kernel.
+  #KERNEL=${KERNEL:-/boot/vmlinuz-generic}
+  GENINITRD_NAMED_SYMLINK=${GENINITRD_NAMED_SYMLINK:-false}
+  GENINITRD_INITRD_GZ_SYMLINK=${GENINITRD_INITRD_GZ_SYMLINK:-false}
+  GENERATOR=${GENERATOR:-mkinitrd}
+  DRACUT_OPTS=${DRACUT_OPTS:-"--force --hostonly"}
+  AUTOGENERATE_INITRD=${AUTOGENERATE_INITRD:-true}
+  AUTO_REMOVE_ORPHANED_INITRDS=${AUTO_REMOVE_ORPHANED_INITRDS:-false}
+  AUTO_REMOVE_INITRD_TREE=${AUTO_REMOVE_INITRD_TREE:-false}
+  AUTO_UPDATE_GRUB=${AUTO_UPDATE_GRUB:-true}
+  GENINITRD_DIALOG=${GENINITRD_DIALOG:-false}
+  GENINITRD_COMMAND_OUTPUT=${GENINITRD_COMMAND_OUTPUT:-true}
+else # these are the defaults when called from the installer:
+  KERNEL=/boot/vmlinuz-generic
+  GENINITRD_NAMED_SYMLINK=false
+  GENINITRD_INITRD_GZ_SYMLINK=false
+  GENERATOR=mkinitrd
+  DRACUT_OPTS="--force --hostonly"
+  AUTOGENERATE_INITRD=true
+  AUTO_REMOVE_ORPHANED_INITRDS=false
+  AUTO_REMOVE_INITRD_TREE=false
+  AUTO_UPDATE_GRUB=true
+  GENINITRD_DIALOG=true
+  GENINITRD_COMMAND_OUTPUT=false
+fi
+-------------------------------------------------------------------------------
+
+
+- após as configurações em ambos arquivos
+geninitrd e setup.01.mkinird, reinstalo o
+kernel para gerar o /boot/init-tree
+
+slackpkg reinstall kernel
+
+slackpkg upgrade-all
+
+-montagem de pendriver com arquivos de configuração
+
+mount /dev/sdb1 /mnt/hd/
+
+
+-custom openzfs slackbuild
+o arquivo rc.zfs está modificado
+
+mkdir -p /tmp/BUILD-BASE/
+
+cp -rf /mnt/hd/openzfs /tmp/BUILD-BASE
+
+cd /tmp/BUILD-BASE/openzfs/
+
+export KERNEL=6.18.34
+
+sh -x openzfs.SlackBuild
+
+installpkg /tmp/openzfs-2.4.2_6.18.34-x86_64-1_SBo.tgz
+
+installpkg --root /boot/initrd-tree/ /tmp/openzfs-2.4.2_6.18.34-x86_64-1_SBo.tgz 
+
+-ajuste o /etc/default/grub para o zfs
+
+GRUB_CMDLINE_LINUX="root=ZFS=zroot/ROOT/slackzfs"
+
+GRUB_DISPLAY_KERNEL_FILETYPES=files
+
+- IMPORTANTE
+copie esses arquivos modificados para os locais correspondentes
+(aqui eles estão dentro de um pendrive)
+
+cp -rf /mnt/hd/slackzfs/rc.6 /etc/rc.d/
+cp -rf /mnt/hd/slackzfs/rc.S /etc/rc.d/
+cp -rf /mnt/hd/slackzfs/init /boot/initrd-tree/init
+
+- ajuste para gerat initrd compativel
+
+vim /etc/mkinitrd.conf
+
+--------------------------------------------------------------------------------
+# antes de rodar o mkinitrd
+# rode
+# export KERNEL=6.18.34
+# para $KERNEL
+
+SOURCE_TREE="/boot/initrd-tree"
+CLEAR_TREE="0"
+OUTPUT_IMAGE="/boot/initrd-$KERNEL.img"
+MODULE_LIST="zfs:xhci-pci:ohci-pci:ehci-pci:xhci-hcd:uhci-hcd:ehci-hcd:hid:usbhid:i2c-hid:hid_generic:hid-asus:hid-cherry:hid-logitech:hid-logitech-dj:hid-logitech-hidpp:hid-lenovo:hid-microsoft:hid_multitouch:xfs"
+ROOTDEV="zroot/ROOT/slackzfs"
+ROOTFS="zfs"
+
+--------------------------------------------------------------------------------
+
+aqui uso o $KERNEL para não precisar ficar editando o arquivo toda vez
+
+export KERNEL=6.18.34
+depmod -a $KERNEL
+mkinitrd -k $KERNEL -F /etc/mkinitrd.conf
+
+
+
+cd /boot/
+
+export ZPOOL_VDEV_NAME_PATH=YES
+
+mount -t efivarfs none /sys/firmware/efi/efivars
+
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=slackZFS
+
+grub-mkconfig -o /boot/grub/grub.cfg
+
+
+após o reboot
+
+criar e adicionar swap
+
+zfs create -V 8G -b $(getconf PAGESIZE) -o compression=lz4 -o logbias=throughput -o sync=always -o primarycache=metadata -o secondarycache=none -o com.sun:auto-snapshot=false zroot/swap
+
+mkswap -f /dev/zvol/zroot/swap
+
+vim /etc/fstab
+
+/dev/zvol/zroot/swap none swap discard 0 0
+
+
+
+
+------------------
+
+- criar o dataset para o usuario
+
+zfs create zroot/home/zezao-slack
+
+adduser

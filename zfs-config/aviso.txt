@@ -1,0 +1,5 @@
+arquivos de configuração para 
+o zfs corretamente com "/etc/zfs/zpool.cache"
+
+bpool (boot do sistema em zfs)
+zroot (raiz do sistema em zfs)

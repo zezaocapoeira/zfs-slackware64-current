@@ -1,0 +1,145 @@
+com a parte de instalação configurada
+
+- live-cd slackware com pacote openzfs instalado
+
+ou
+
+- iso padrão do slackware com pacote zfs e instalado após o boot
+
+https://www.youtube.com/watch?v=3kFWXWQz8Ys
+
+
+- etapas que usei para criar as pools e dataset
+
+DISK=/dev/disk/by-id/nvme-ADATA_LEGEND_710_2O042LQKE1D9
+
+
+wipefs -a $DISK
+blkdiscard -f $DISK
+sgdisk --zap-all $DISK
+partprobe $DISK
+
+
+sgdisk     -n1:1M:+512M   -t1:EF00 $DISK
+
+sgdisk     -n2:0:+1G      -t2:BF01 $DISK
+
+sgdisk     -n3:0:0        -t3:BF00 $DISK
+
+mkfs.fat -F32 /dev/nvme0n1p1
+
+
+zpool create \
+    -o ashift=12 \
+    -o autotrim=on \
+    -o compatibility=grub2 \
+    -o cachefile=/etc/zfs/zpool.cache \
+    -O devices=off \
+    -O acltype=posixacl -O xattr=sa \
+    -O compression=lz4 \
+    -O normalization=formD \
+    -O relatime=on \
+    -O canmount=off -O mountpoint=/boot -R /mnt/hd \
+    bpool ${DISK}-part2
+
+
+zpool create \
+    -o ashift=12 \
+    -o autotrim=on \
+    -O acltype=posixacl -O xattr=sa -O dnodesize=auto \
+    -O compression=lz4 \
+    -O normalization=formD \
+    -O relatime=on \
+    -O canmount=off -O mountpoint=/ -R /mnt/hd \
+    zroot ${DISK}-part3
+
+
+zfs create -o canmount=off -o mountpoint=none zroot/ROOT
+
+zfs create -o canmount=off -o mountpoint=none bpool/BOOT
+
+zfs create -o canmount=noauto -o mountpoint=/ zroot/ROOT/slackzfs
+
+zfs create -o mountpoint=/boot bpool/BOOT/slackzfs
+
+zfs create                     zroot/home
+
+zfs create -o mountpoint=/root zroot/home/root
+
+chmod 700 /mnt/root
+
+chmod 700 /mnt/hd/root
+
+zfs create -o canmount=off     zroot/var
+
+zfs create -o canmount=off     zroot/var/lib
+
+zfs create                     zroot/var/log
+
+zfs create                     zroot/var/spool
+
+zfs create -o com.sun:auto-snapshot=false zroot/var/cache
+
+zfs create -o com.sun:auto-snapshot=false zroot/var/lib/nfs
+
+zfs create -o com.sun:auto-snapshot=false zroot/var/tmp
+
+chmod 1777 /mnt/hd/var/tmp
+
+zfs create -o canmount=off zroot/usr
+
+zfs create                 zroot/usr/local
+
+zfs create -o com.sun:auto-snapshot=false  zroot/tmp
+
+chmod 1777 /mnt/tmp
+
+zpool import -N -R /mnt/hd zroot
+
+zpool import -N -R /mnt/hd bpool
+
+zfs load-key -a
+
+zfs mount zroot/ROOT/slackzfs
+
+zfs mount -a
+
+zpool set cachefile=/etc/zfs/zpool.cache zroot
+
+mkdir -p /mnt/hd/{etc/zfs,boot/efi}
+
+cp /etc/zfs/zpool.cache /mnt/hd/etc/zfs/zpool.cache
+
+
+
+
+- parte da instalação do sistema
+pela iso modificada pelo setup 
+
+https://www.youtube.com/watch?v=3kFWXWQz8Ys
+
+
+-pela iso live cd do slackware
+https://download.liveslak.org/slackware64-current-live/
+
+---slackbuild custom --add link
+
+-referencia para instalar os pacotes localmente
+https://github.com/patrickernandes/slackware-btrfs-instalacao
+
+
+mkdir iso
+
+cd iso
+
+(adapte a url do rsync para sua realidade)
+
+rsync -av --delete -rlptD --delete-excluded --progress --exclude pasture --exclude testing --exclude source --exclude kde --exclude extra/source rsync://linorg.usp.br/slackware/slackware64-current/ ./iso
+
+for pkg in a ap d e f k l n t tcl x xap xfce ; do installpkg --terse --root /mnt/hd ./slackware64/$pkg/*.txz; done
+
+
+- chroot etapas
+veja o arquivo
+
+zfs-physicalmachine-2.txt
