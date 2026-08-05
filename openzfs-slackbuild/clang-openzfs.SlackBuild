@@ -99,7 +99,7 @@ vim
 ./autogen.sh
 
 CFLAGS="$SLKCFLAGS" \
-  ./configure \
+	./configure KERNEL_LLVM=1 \
   --prefix=/usr \
   --localstatedir=/var \
   --sysconfdir=/etc \
@@ -116,7 +116,7 @@ CFLAGS="$SLKCFLAGS" \
   $DRACUTLIBDIR \
   --build=$ARCH-slackware-linux
 
-make -j$(nproc)
+make CC=clang LD=ld.lld LLVM=1 LLVM_IAS=1 -j$(nproc)
 make install DESTDIR=$PKG
 
 rm -f $PKG/{,usr/}lib${LIBDIRSUFFIX}/*.la
