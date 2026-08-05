@@ -1,5 +1,13 @@
-arquivos de configuração para 
-o zfs corretamente com "/etc/zfs/zpool.cache"
+Atenção a atualização do pacote "sysvinit-scripts" , sobrescreve esses
+arquivos. 
 
-bpool (boot do sistema em zfs)
-zroot (raiz do sistema em zfs)
+
+Arquivos de configuração para o zfs montar as pools corretamente usando "/etc/zfs/zpool.cache"
+bpool (boot do sistema em zfs) zroot (raiz do sistema em zfs) .
+
+Os arquivos abaixo:
+
+/boot/initrd-tree/init
+/etc/rc.d/rc.6
+/etc/rc.d/rc.S
+/etc/rc.d/rc.zfs

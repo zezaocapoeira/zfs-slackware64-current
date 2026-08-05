@@ -7,11 +7,11 @@ opção "shell" na janela do dialog e use:
 chroot /mnt
 
 - no caso do live-cd na parte da instalação
-
-mount -t proc /proc /mnt/proc
-mount -o bind /dev /mnt/dev
-mount -o bind /sys /mnt/sys
-chroot /mnt /bin/bash
+mkdir -p /mnt/slack
+mount -t proc /proc /mnt/slack/proc
+mount -o bind /dev /mnt/slack/dev
+mount -o bind /sys /mnt/slack/sys
+chroot /mnt/slack /bin/bash
 source /etc/profile
 
 - timezone
@@ -49,7 +49,7 @@ slackpkg update
 
 slackpkg update gpg
 
-- ajuste para false algumas coisas para não apagar /boot/init-tree
+- ajuste para false algumas coisas para não apagar /boot/initrd-tree
 
 vim /etc/default/geninitrd 
 
@@ -134,23 +134,24 @@ cp -rf /mnt/hd/slackzfs/rc.6 /etc/rc.d/
 cp -rf /mnt/hd/slackzfs/rc.S /etc/rc.d/
 cp -rf /mnt/hd/slackzfs/init /boot/initrd-tree/init
 
-- ajuste para gerat initrd compativel
+- ajuste para gerar initrd compativel
 
 vim /etc/mkinitrd.conf
 
 --------------------------------------------------------------------------------
-# antes de rodar o mkinitrd
-# rode
-# export KERNEL=6.18.34
-# para $KERNEL
+#antes de rodar o mkinitrd, rode
+#export KERNEL=6.18.34
+#para atribuir algo ao $KERNEL
 
+#conteudo do arquivo /etc/mkinitrd.conf
+#
 SOURCE_TREE="/boot/initrd-tree"
 CLEAR_TREE="0"
 OUTPUT_IMAGE="/boot/initrd-$KERNEL.img"
 MODULE_LIST="zfs:xhci-pci:ohci-pci:ehci-pci:xhci-hcd:uhci-hcd:ehci-hcd:hid:usbhid:i2c-hid:hid_generic:hid-asus:hid-cherry:hid-logitech:hid-logitech-dj:hid-logitech-hidpp:hid-lenovo:hid-microsoft:hid_multitouch:xfs"
 ROOTDEV="zroot/ROOT/slackzfs"
 ROOTFS="zfs"
-
+#
 --------------------------------------------------------------------------------
 
 aqui uso o $KERNEL para não precisar ficar editando o arquivo toda vez
@@ -170,6 +171,17 @@ mount -t efivarfs none /sys/firmware/efi/efivars
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=slackZFS
 
 grub-mkconfig -o /boot/grub/grub.cfg
+
+exit
+
+-na iso do slackware ou no livecd tem que desmontar
+
+umount -lR /mnt/ ( na iso padrão do slackware)
+ou
+umount -lR /mn/slack ( na iso do livecd)
+
+zfs umount -a
+zpool export -a
 
 
 após o reboot

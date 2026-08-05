@@ -66,8 +66,6 @@ zfs create                     zroot/home
 
 zfs create -o mountpoint=/root zroot/home/root
 
-chmod 700 /mnt/root
-
 chmod 700 /mnt/hd/root
 
 zfs create -o canmount=off     zroot/var
@@ -109,8 +107,6 @@ zpool set cachefile=/etc/zfs/zpool.cache zroot
 mkdir -p /mnt/hd/{etc/zfs,boot/efi}
 
 cp /etc/zfs/zpool.cache /mnt/hd/etc/zfs/zpool.cache
-
-
 
 
 - parte da instalação do sistema
