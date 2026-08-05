@@ -118,7 +118,10 @@ https://www.youtube.com/watch?v=3kFWXWQz8Ys
 -pela iso live cd do slackware
 https://download.liveslak.org/slackware64-current-live/
 
----slackbuild custom --add link
+---slackbuild custom 
+
+https://github.com/zezaocapoeira/zfs-slackware64-current/tree/main/openzfs-slackbuild
+
 
 -referencia para instalar os pacotes localmente
 https://github.com/patrickernandes/slackware-btrfs-instalacao
