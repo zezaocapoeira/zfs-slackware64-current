@@ -12,7 +12,7 @@ Tentei deixar da forma mais simples e clara possível
 
 Caso for usar:
 - adapte para sua realidade
-- não é um procedimente de instalação oficial
+- não é um procedimento de instalação oficial
 - zfs é um pouco complexo
 - faça testes em ambiente controlado em máquinas virtuais ou em um pc secundário
 - deixe um sistema live-cd instalado em um pendriver, para emergencia, com a mesma versão do "openzfs" do seu sistema para 
