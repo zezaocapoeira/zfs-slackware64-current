@@ -7,10 +7,10 @@ echo "Cleaning up..."
 
 make clean
 # Make sure header files aren't missing...
-#make prepare
+make prepare
 
 # clang support
-make CC=clang LD=ld.lld LLVM=1 LLVM_IAS=1 prepare
+#make CC=clang LD=ld.lld LLVM=1 LLVM_IAS=1 prepare
 
 # Don't package the kernel in the sources:
 find . -name "*Image" -exec rm "{}" \+
