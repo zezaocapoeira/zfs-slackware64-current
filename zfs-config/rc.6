@@ -77,6 +77,24 @@ if [ -x /sbin/hwclock -a -z "$container" ]; then
   fi
 fi
 
+# If we are using LILO, see if it needs to be reinstalled:
+if [ -r /etc/lilo.conf ]; then
+  # Are we using /boot/vmlinuz-generic?
+  if cat /etc/lilo.conf | sed 's/ //g' | grep -q "^image=/boot/vmlinuz-generic$" ; then
+    # See if LILO is installed:
+    liloboot="$(cat /etc/lilo.conf | sed 's/ //g' | grep "^boot=" | cut -f 2 -d =)"
+    if dd if=${liloboot} bs=512 count=1 2>&1 | grep -q LILO ; then
+      # LILO is installed. If there's a kernel mismatch, reinstall it:
+      if [ ! "$(uname -r)" = "$(readlink /boot/vmlinuz-generic | cut -f 2 -d -)" ]; then
+        echo "Your machine is using LILO, but the running kernel ($(uname -r)) is different"
+        echo "than what the /boot/vmlinuz-generic symlink points to ($(readlink /boot/vmlinuz-generic | cut -f 2 -d -))."
+        echo "Reinstalling LILO:"
+        lilo
+      fi
+    fi
+  fi
+fi
+
 # Run any local shutdown scripts:
 if [ -x /etc/rc.d/rc.local_shutdown ]; then
   /etc/rc.d/rc.local_shutdown stop
